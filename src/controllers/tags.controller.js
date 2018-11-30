@@ -25,3 +25,16 @@ export const getTagsByRepoId = async (req, res, next) => {
     return res.status(HTTPSTATUS.BAD_REQUEST).json({ error });
   }
 };
+
+export const deleteTag = async (req, res, next) => {
+  const { tagId } = req.params;
+
+  try {
+    await queries.delete(tagId);
+    return res.status(HTTPSTATUS.OK).json({ message: 'Deleted with success.' });
+  } catch (error) {
+    return res
+      .status(HTTPSTATUS.BAD_REQUEST)
+      .json({ error: "Can't Delete Tag." });
+  }
+};

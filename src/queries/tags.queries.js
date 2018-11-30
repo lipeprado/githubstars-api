@@ -13,4 +13,9 @@ module.exports = {
       .returning('*')
       .where('repo_id', id);
   },
+  delete(id) {
+    return knex('tags')
+      .where('id', id)
+      .del();
+  },
 };
