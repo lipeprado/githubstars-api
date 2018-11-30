@@ -1,0 +1,73 @@
+{
+  "name": "githubstars-api",
+  "version": "1.0.0",
+  "description": "adding Tags for every repo that you may like.",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src -d dist",
+    "start": "NODE_ENV=development nodemon src/index.js --exec babel-node",
+    "db:development": "chmod u+x ./database/script_db.sh && ./database/script_db.sh",
+    "run:migrations": "./node_modules/.bin/knex migrate:latest",
+    "run:seeds": "./node_modules/.bin/knex seed:run",
+    "env:dev": "NODE_ENV=development npm run db:development && NODE_ENV=development npm run run:migrations && NODE_ENV=development npm run run:seeds"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bcrypt": "^3.0.2",
+    "body-parser": "^1.18.3",
+    "bookshelf-bcrypt": "^3.0.2",
+    "bookshelf-uuid": "^1.0.0",
+    "config": "^2.0.1",
+    "express": "^4.16.4",
+    "http-status": "^1.3.1",
+    "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
+    "pretty-error": "^2.1.1",
+    "registry": "^0.3.0",
+    "uuid": "^3.3.2",
+    "visibility": "0.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "basic-logger": "^0.4.4",
+    "bookshelf": "^0.13.3",
+    "compression": "^1.7.3",
+    "cors": "^2.8.5",
+    "dotenv": "^6.1.0",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "express-status-monitor": "^1.2.3",
+    "express-validation": "^1.0.2",
+    "helmet": "^3.15.0",
+    "knex": "^0.15.2",
+    "method-override": "^3.0.0",
+    "moment": "^2.22.2",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.18.6",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "pg": "^7.6.1",
+    "request": "^2.88.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lipeprado/githubstars-api.git"
+  },
+  "keywords": [
+    "tags",
+    "labels",
+    "github",
+    "starts",
+    "like"
+  ],
+  "author": "Filipe Prado @lipeprado",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lipeprado/githubstars-api/issues"
+  },
+  "homepage": "https://github.com/lipeprado/githubstars-api#readme"
+}

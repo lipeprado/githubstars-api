@@ -22,16 +22,28 @@ Enter the project directory:
 cd githubstars-api
 ```
 
-Start the server locally:
+Install dependecies:
 
 ```
-npm start
+npm install
 ```
 
 Build an environment with docker and run:
 
 ```
 docker-compose up --build
+```
+
+Make migrations and seeds:
+
+```
+npm run env:dev
+```
+
+Start the server locally:
+
+```
+npm run start
 ```
 
 ## Tests
