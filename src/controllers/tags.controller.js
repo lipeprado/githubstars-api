@@ -1,13 +1,11 @@
 import HTTPSTATUS from 'http-status';
 import * as queries from '../queries/tags.queries';
+import { formatingTags } from '../helpers';
 
 export const index = async (req, res, next) => {
-  const { name } = req.body;
+  const { tag } = req.body;
   const { repoId } = req.params;
-  const formatedTag = name.split(',').map(tag => {
-    const newTag = { repo_id: repoId, name: tag.trim() };
-    return newTag;
-  });
+  const formatedTag = formatingTags(tag, repoId);
   try {
     const createdTag = await queries.create(formatedTag);
     return res.status(HTTPSTATUS.OK).json({ createdTag });
@@ -28,7 +26,6 @@ export const getTagsByRepoId = async (req, res, next) => {
 
 export const deleteTag = async (req, res, next) => {
   const { tagId } = req.params;
-
   try {
     await queries.delete(tagId);
     return res.status(HTTPSTATUS.OK).json({ message: 'Deleted with success.' });
