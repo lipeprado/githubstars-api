@@ -2,6 +2,7 @@ import HTTPSTATUS from 'http-status';
 import { githubApi } from '../helpers';
 import queries from '../queries/repos.queries';
 import _ from 'lodash';
+import reposModel from '../models/repos.model';
 
 export const index = async (req, res, next) => {
   const { username } = req.body;
@@ -22,8 +23,13 @@ export const index = async (req, res, next) => {
 
     if (!_.isEmpty(repos)) {
       const newRepos = await removingDuplicates(starredRepo, repos);
-      const addedRepos = await queries.create(newRepos);
-      return res.status(200).json({ addedRepos });
+      if (!_.isEmpty(newRepos)) {
+        const addedRepos = await queries.create(newRepos);
+        return res.status(200).json({ addedRepos });
+      }
+      return res
+        .status(HTTPSTATUS.NO_CONTENT)
+        .json({ message: 'Nothing to add' });
     } else {
       createRepos(starredRepo, res);
     }
@@ -35,10 +41,13 @@ export const index = async (req, res, next) => {
 export const getByUsername = async (req, res, next) => {
   const { username } = req.params;
   try {
-    const repos = await queries.getAll(username);
-    return res.status(200).json({ size: repos.length, repos });
+    const repos = await reposModel
+      .where({ username: username })
+      .fetchAll({ withRelated: ['tags'] });
+
+    return res.status(200).json({ repos });
   } catch (error) {
-    return res.status(400).json({ error });
+    return res.status(400).json({ error: 'Nothing to show' });
   }
 };
 

@@ -2,9 +2,9 @@ exports.up = function(knex, Promise) {
   return knex.schema.createTable('tags', table => {
     table.increments();
     table.string('name');
-    table.integer('repoId');
+    table.integer('repo_id');
     table
-      .foreign('repoId')
+      .foreign('repo_id')
       .references('id')
       .inTable('repos');
   });
