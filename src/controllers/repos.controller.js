@@ -3,26 +3,29 @@ import { githubApi } from '../helpers';
 import queries from '../queries/repos.queries';
 import _ from 'lodash';
 import reposModel from '../models/repos.model';
+import uuidv3 from 'uuid';
 
 export const index = async (req, res, next) => {
   const { username } = req.body;
 
   try {
-    const repos = await queries.getAll(username);
-    const response = await githubApi.get(`/users/${username}/starred`);
-    const starredRepo = response.data.map(repo => {
-      return {
-        id: repo.id,
+    const repos = queries.getAll(username);
+    const response = githubApi.get(`/users/${username}/starred`);
+    const [dataBaseRepos, apiRepos] = await Promise.all([repos, response]);
+    const starredRepo = apiRepos.data.map(repo => {
+      const newRepo = {
+        id: uuidv3.v4(),
         username,
         name: repo.name,
         description: repo.description,
         url: repo.html_url,
         language: repo.language,
       };
+      return newRepo;
     });
 
-    if (!_.isEmpty(repos)) {
-      const newRepos = await removingDuplicates(starredRepo, repos);
+    if (!_.isEmpty(dataBaseRepos)) {
+      const newRepos = await removingDuplicates(starredRepo, dataBaseRepos);
       if (!_.isEmpty(newRepos)) {
         const addedRepos = await queries.create(newRepos);
         return res.status(200).json({ addedRepos });
@@ -34,7 +37,7 @@ export const index = async (req, res, next) => {
       createRepos(starredRepo, res);
     }
   } catch (error) {
-    return res.status(400).json({ error });
+    return res.status(400).json({ error: 'Somenthing wrong happen here.' });
   }
 };
 
@@ -47,7 +50,7 @@ export const getByUsername = async (req, res, next) => {
 
     return res.status(200).json({ repos });
   } catch (error) {
-    return res.status(400).json({ error: 'Nothing to show' });
+    return res.status(400).json({ error: 'Nothing to show.' });
   }
 };
 

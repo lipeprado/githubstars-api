@@ -1,7 +1,7 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('repos', table => {
     table
-      .increments('id')
+      .uuid('id')
       .notNullable()
       .primary();
     table.string('name');

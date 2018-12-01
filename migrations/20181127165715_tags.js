@@ -2,7 +2,7 @@ exports.up = function(knex, Promise) {
   return knex.schema.createTable('tags', table => {
     table.increments();
     table.string('name');
-    table.integer('repo_id');
+    table.uuid('repo_id');
     table
       .foreign('repo_id')
       .references('id')
