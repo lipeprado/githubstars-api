@@ -15,8 +15,8 @@ export default app => {
   app.use(morgan('dev'));
   app.use(bodyParser.json({ limit: '150mb' }));
   app.use(bodyParser.urlencoded({ limit: '150mb', extended: true }));
-  app.use(helmet());
   app.use(cors());
+  app.use(helmet());
   app.use(expressStatusMonitor());
   app.use(methodOverride());
 };

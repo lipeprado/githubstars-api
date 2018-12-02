@@ -1,43 +1,41 @@
 import HTTPSTATUS from 'http-status';
-import { githubApi } from '../helpers';
+import { githubApi, formatingRepos } from '../helpers';
 import queries from '../queries/repos.queries';
 import _ from 'lodash';
 import reposModel from '../models/repos.model';
-import uuidv3 from 'uuid';
 
 export const index = async (req, res, next) => {
   const { username } = req.body;
-
   try {
-    const repos = queries.getAll(username);
-    const response = githubApi.get(`/users/${username}/starred`);
-    const [dataBaseRepos, apiRepos] = await Promise.all([repos, response]);
-    const starredRepo = apiRepos.data.map(repo => {
-      const newRepo = {
-        id: uuidv3.v4(),
-        username,
-        name: repo.name,
-        description: repo.description,
-        url: repo.html_url,
-        language: repo.language,
-      };
-      return newRepo;
-    });
-
-    if (!_.isEmpty(dataBaseRepos)) {
-      const newRepos = await removingDuplicates(starredRepo, dataBaseRepos);
-      if (!_.isEmpty(newRepos)) {
-        const addedRepos = await queries.create(newRepos);
-        return res.status(200).json({ addedRepos });
-      }
-      return res
-        .status(HTTPSTATUS.NO_CONTENT)
-        .json({ message: 'Nothing to add' });
+    const dbRepos = await queries.getAll(username);
+    const response = await githubApi.get(`/users/${username}/starred`);
+    const [dataBaseRepos, apiRepos] = await Promise.all([dbRepos, response]);
+    if (dbRepos.length <= 0) {
+      createRepos(formatingRepos(apiRepos.data, username), res);
     } else {
-      createRepos(starredRepo, res);
+      const newRepos = removingDuplicates(
+        formatingRepos(apiRepos.data, username),
+        dataBaseRepos,
+      );
+      if (newRepos.length > 0) {
+        createRepos(newRepos, res);
+      } else {
+        return res.status(200).json({ dataBaseRepos });
+      }
     }
   } catch (error) {
-    return res.status(400).json({ error: 'Somenthing wrong happen here.' });
+    return res
+      .status(400)
+      .json({ error: error, message: 'Somenthing wrong happen here.' });
+  }
+};
+
+const createRepos = async (repos, res) => {
+  try {
+    await queries.create(repos);
+    return res.status(200).json({});
+  } catch (error) {
+    return res.status(400).json({ error });
   }
 };
 
@@ -54,12 +52,7 @@ export const getByUsername = async (req, res, next) => {
   }
 };
 
-const removingDuplicates = (arr1, arr2) => {
-  const newValues = _.differenceWith(arr1, arr2, _.isEqual);
+const removingDuplicates = (apiRepos, dbRepos) => {
+  const newValues = _.differenceBy(apiRepos, dbRepos, 'name');
   return newValues;
-};
-
-const createRepos = async (repos, res) => {
-  const created = await queries.create(repos);
-  return res.status(200).json({ created });
 };
