@@ -7,8 +7,9 @@ export const index = async (req, res, next) => {
   const { repoId } = req.params;
   const formatedTag = formatingTags(tag, repoId);
   try {
+    await queries.deleteByRepoId(repoId);
     const createdTag = await queries.create(formatedTag);
-    return res.status(HTTPSTATUS.OK).json({ createdTag });
+    return res.status(200).json({ createdTag });
   } catch (error) {
     return res.status(HTTPSTATUS.BAD_REQUEST).json({ error: 'Bad Request' });
   }

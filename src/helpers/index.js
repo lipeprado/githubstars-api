@@ -2,6 +2,7 @@ export { githubApi } from './axios';
 import uuidv3 from 'uuid';
 
 export const formatingTags = (tags, repoId) => {
+  console.log({ tags });
   const toLower = tags.toLowerCase();
   const spliting = toLower.split(',');
   const uniq = new Set(spliting).toJSON();
